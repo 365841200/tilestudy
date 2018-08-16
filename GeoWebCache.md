@@ -1,16 +1,21 @@
-## GeoServer + OpenLayer
+# GeoServer + OpenLayer
+
 * GeoWebcCache相当于OpenLayer和GeoServer之间的中介，GeoWebCache会根据你的配置信息，把相应的地图图层切好图，存放在磁盘中，然后在使用OpenLayer加载地图服务的时候，把地图服务的地址指向GeoWebCache，GeoWebCache接收到这些请求后，会根据请求的位置和比例尺在切片目录中找到对应的瓦片，然后返回，省去了动态生成地图的过程，速度大幅度提高，且由于请求的图片资源是事先生成好的，浏览器加载这些图片后，下次再请求同样的图片，就会从浏览器的缓存中拉去，速度进一步提高。
 
 ## GeoWebCache配置
+
 > 在WEB-INF目录下找到一系列配置文件，先找到web.xml，然后在web-app根元素下添加：
-```
+
+```xml
 <context-param>
     <param-name>GEOWEBCACHE_CACHE_DIR</param-name>
     <param-value>你的GeoWebCache</param-value>
 </context-param>
 ```
+
 >param-value的值就是你要存放GeoWebCache瓦片的位置，配置好这里，重启tomcat，你会发现在你的瓦片目录下生成了一些文件，其中就有GeoWebCache.xml，这个文件是GeoWebCache配置的关键所在，以下是这个文件的配置信息：
-```
+
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <gwcConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"     xmlns="http://geowebcache.org/schema/1.3.0" xsi:schemaLocation="http://geowebcache.org/schema/1.3.0
 http://geowebcache.org/schema/1.3.0/geowebcache.xsd">
@@ -65,16 +70,15 @@ http://geowebcache.org/schema/1.3.0/geowebcache.xsd">
             </extent>
             <!-- 分辨率集合（也就是定义缩放的级别），一个像素点代表多少地图单位，和比例尺的意思一样，这里定义了11个缩放级别 -->
             <resolutions>
-                <double>1000.4406398437495</double>      
-                <double>517.3601599609374</double>      
-                <double>258.6800799804687</double>      
-                <double>129.34003999023435</double>    
-                <double>64.67001999511717</double>      
-                <double>32.335009997558586</double>      
-                <double>16.167504998779293</double>      
-                <double>8.083752499389647</double>      
-                <double>4.0104690624237058</double>      
-                <double>2.25261726560592646</double>      
+                <double>1000.4406398437495</double>
+                <double>517.3601599609374</double>
+                <double>258.6800799804687</double>
+                <double>129.34003999023435</double>            <double>64.67001999511717</double>
+                <double>32.335009997558586</double>
+                <double>16.167504998779293</double>
+                <double>8.083752499389647</double>
+                <double>4.0104690624237058</double>
+                <double>2.25261726560592646</double>
                 <double>1.12630863280296323</double>
             </resolutions>
             <!-- 每个单位所代表的长度 -->
@@ -117,14 +121,16 @@ http://geowebcache.org/schema/1.3.0/geowebcache.xsd">
     </layers>
 </gwcConfiguration>
 ```
-* 配置好上面的信息之后，进入：http://localhost:8006/geowebcache/demo 点击"Reload Configuration"重新读取配置信息
+
+* 配置好上面的信息之后，进入：<http://localhost:8006/geowebcache/demo> 点击"Reload Configuration"重新读取配置信息
 * 如果需要你输入密码，密码信息在WEB-INF\users.properties这个文件夹中
-* 重新进入：http://localhost:8006/geowebcache/demo 如果配置信息没错，所配置的图层信息会全部显示在该页面上:<br>![Image text](https://static.oschina.net/uploads/space/2013/0129/135055_21i7_189876.png)
-* 点击"Seed this Layer"，然后你需要输入:<br>![Image Text](https://static.oschina.net/uploads/space/2013/0129/140404_hEbe_189876.png)
+* 重新进入：<http://localhost:8006/geowebcache/demo> 如果配置信息没错，所配置的图层信息会全部显示在该页面上:</br>![Image text](https://static.oschina.net/uploads/space/2013/0129/135055_21i7_189876.png)
+* 点击"Seed this Layer"，然后你需要输入:</br>![Image Text](https://static.oschina.net/uploads/space/2013/0129/140404_hEbe_189876.png)
 * 设置好，点击"submit"就开始切图了
 
 ## OpenLayer调用Geowebcache瓦片
-```
+
+```javaScript
 var options = {
     resolutions:[1.12630863280296323,2.25261726560592646,4.0104690624237058,8.083752499389647,16.167504998779293,32.335009997558586,64.67001999511717,129.34003999023435,258.6800799804687,517.3601599609374,1000.4406398437495],
     projection: new OpenLayers.Projection("EPSG:3395"),
